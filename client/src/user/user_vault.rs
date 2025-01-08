@@ -246,18 +246,6 @@ async fn build_instructions(
         remaining_accounts,
     ) = params;
 
-    // Config init instruction
-    let config_ix = program
-        .request()
-        .accounts(soda_accounts::InitializeConfig {
-            config: config_pda,
-            payer: payer.pubkey(),
-            authority: config_authority::id(),
-            system_program: system_program::id(),
-        })
-        .args(soda_instructions::InitializeVaultConfig)
-        .instructions()?;
-
     // Vault init instruction
     let mut init_vault_ix = program
         .request()
@@ -370,15 +358,6 @@ async fn get_update_light_account_params(
         address_merkle_tree_pubkey,
         address_queue_pubkey: address_merkle_tree_queue_pubkey,
     };
-
-    // Generate address
-    let address_seed = derive_address_seed(
-        &[USER_VAULT.as_bytes(), current_authority.as_ref()],
-        &zk_onchain::ID,
-    );
-
-    let address = derive_address(&address_seed, &address_merkle_context);
-    let address_string = bs58::encode(address).into_string();
 
     let address_merkle_context =
         pack_address_merkle_context(address_merkle_context, &mut remaining_accounts);
@@ -512,7 +491,7 @@ async fn update_user_vault_instructions(
     );
     let program = client.program(zk_onchain::id())?;
 
-    let (config_pda, registered_program_pda, account_compression_authority) =
+    let (_config_pda, registered_program_pda, account_compression_authority) =
         get_program_addresses()?;
 
     let cpi_signer = find_cpi_signer(&zk_onchain::ID);

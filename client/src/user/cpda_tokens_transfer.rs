@@ -16,7 +16,7 @@ use solana_sdk::{
     sysvar::rent,
     transaction::Transaction,
 };
-use std::{str::FromStr, sync::Arc, thread::sleep, time::Duration};
+use std::{str::FromStr, sync::Arc};
 use zk_onchain::{
     accounts as soda_accounts, instruction as soda_instructions, state::MINT_AUTHORITY,
     user::COMPRESSED_MINT_SEED,
@@ -56,24 +56,11 @@ pub async fn user_vaults_transfer_ix(
     initialize_user_vault(rpc_client, Some(user_1), Some(user_1_vault)).await?;
     initialize_user_vault(rpc_client, Some(user_2), Some(user_2_vault)).await?;
 
-    let address_merkle_tree_queue_pubkey =
-        Pubkey::from_str("aq1S9z4reTSQAdgWHGD2zDaS39sjGrAxbR31vxJ2F4F")?;
-
-    let address_merkle_tree_pubkey =
-        Pubkey::from_str("amt1Ayt45jfbdw5YSo7iz6WZxUmnZsQTYXy82hVwyC2")?;
-
     let merkle_tree_pubkey = Pubkey::from_str("smt1NamzXdq4AMqS2fS2F1i5KTYPZRhoHgWx38d8WsT")?;
-
-    let address_merkle_context = AddressMerkleContext {
-        address_merkle_tree_pubkey,
-        address_queue_pubkey: address_merkle_tree_queue_pubkey,
-    };
 
     // authority
     let (pda_authority, _) =
         Pubkey::find_program_address(&[&MINT_AUTHORITY.as_bytes()], &zk_onchain::ID);
-
-    let associated_account = get_associated_token_address(&pda_authority, &derived_mint);
 
     let (metadata_account, _) = Pubkey::find_program_address(
         &[

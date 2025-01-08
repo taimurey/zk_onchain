@@ -43,13 +43,13 @@ use crate::utils::vectorizer::vec_to_array;
 use anchor_client::{Client, Cluster};
 use anyhow::Result;
 
-use zk_onchain::state::*;
-use zk_onchain::vaults::config_authority;
-use zk_onchain::{accounts as soda_accounts, instruction as soda_instructions};
 use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::read_keypair_file;
 use solana_sdk::signer::Signer;
 use solana_sdk::system_program;
+use zk_onchain::state::*;
+use zk_onchain::vaults::config_authority;
+use zk_onchain::{accounts as soda_accounts, instruction as soda_instructions};
 
 pub fn derive_server_vault(
     authority: Pubkey,
@@ -245,18 +245,6 @@ async fn build_instructions(
         remaining_accounts,
     ) = params;
 
-    // Config init instruction
-    let config_ix = program
-        .request()
-        .accounts(soda_accounts::InitializeConfig {
-            config: config_pda,
-            payer: payer.pubkey(),
-            authority: config_authority::id(),
-            system_program: system_program::id(),
-        })
-        .args(soda_instructions::InitializeVaultConfig)
-        .instructions()?;
-
     // Vault init instruction
     let mut init_vault_ix = program
         .request()
@@ -373,15 +361,6 @@ async fn get_update_server_cpda_params(
         address_merkle_tree_pubkey,
         address_queue_pubkey: address_merkle_tree_queue_pubkey,
     };
-
-    // Generate address
-    let address_seed = derive_address_seed(
-        &[SERVER_VAULT.as_bytes(), current_authority.as_ref()],
-        &zk_onchain::ID,
-    );
-
-    let address = derive_address(&address_seed, &address_merkle_context);
-    let address_string = bs58::encode(address).into_string();
 
     let address_merkle_context =
         pack_address_merkle_context(address_merkle_context, &mut remaining_accounts);
