@@ -1,0 +1,10 @@
+.anchor
+.DS_Store
+**/*.rs.bk
+node_modules
+test-ledger
+.yarn
+target/*
+!target/deploy/
+target/deploy/*
+!target/deploy/zk_onchain-keypair.json

@@ -1,0 +1,44 @@
+[package]
+name = "zk_onchain"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "zk_onchain"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+client = []
+cpi = ["no-entrypoint"]
+default = ["idl-build", "custom-heap"]
+idl-build = ["anchor-lang/idl-build", "light-sdk/idl-build"]
+
+custom-heap = []
+test-sbf = []
+bench-sbf = []
+
+devnet = []
+
+[dependencies]
+anchor-lang = { workspace = true }
+anchor-spl = { workspace = true }
+
+account-compression = { workspace = true, features = ["cpi"] }
+light-system-program = { workspace = true, features = ["cpi"] }
+
+light-compressed-token = { workspace = true, features = ["cpi"] }
+light-sdk = { workspace = true }
+light-hasher = { workspace = true, features = ["solana"] }
+light-macros = { workspace = true }
+light-sdk-macros = { workspace = true }
+light-utils = { workspace = true }
+light-verifier = { workspace = true }
+mpl-token-metadata = { workspace = true }
+solana-program = { workspace = true }
+
+[target.'cfg(not(target_os = "solana"))'.dependencies]
+solana-sdk = "1.18.22"
